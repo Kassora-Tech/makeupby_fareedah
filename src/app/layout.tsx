@@ -23,13 +23,20 @@ export const metadata: Metadata = {
 };
 
 /*
-  Runs before first paint so returning visitors never flash the intro card.
-  Mirrors the sessionStorage key used by IntroLoader.
+  Marks the intro card as already-seen before the browser paints, so returning
+  visitors in the same session never flash it.
+
+  This runs immediately after the overlay element in <body> (not in <head>) and
+  tags the overlay itself rather than <html>. Stamping an attribute onto <html>
+  reliably trips React's hydration check, and suppressHydrationWarning doesn't
+  cover the root element — tagging the overlay, which carries
+  suppressHydrationWarning, keeps hydration clean.
 */
 const introFlagScript = `
 try {
   if (sessionStorage.getItem('fd-intro-seen') === '1') {
-    document.documentElement.dataset.intro = 'seen';
+    var el = document.querySelector('.intro-overlay');
+    if (el) el.setAttribute('data-seen', '');
   }
 } catch (e) {}
 `;
@@ -42,16 +49,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      // The intro script below stamps data-intro on <html> before hydration by design,
-      // so React should not treat that attribute difference as a mismatch.
-      suppressHydrationWarning
       className={`${playfair.variable} ${inter.variable} h-full scroll-smooth antialiased`}
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: introFlagScript }} />
-      </head>
       <body className="min-h-full flex flex-col bg-ink text-text font-body">
         <IntroLoader />
+        <script dangerouslySetInnerHTML={{ __html: introFlagScript }} />
         <div className="grain-overlay" aria-hidden="true" />
         {children}
       </body>

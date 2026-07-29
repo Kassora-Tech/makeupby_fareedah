@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { brand } from "@/data/content";
 
 const INTRO_KEY = "fd-intro-seen";
 const HOLD_MS = 1250; // logotype on screen
@@ -9,9 +10,10 @@ const FADE_MS = 450; // overlay fade-out
 /**
  * Brief studio-opening title card on first load.
  *
- * Repeat visits never see it: an inline script in the document head (see layout.tsx)
- * reads sessionStorage and stamps `data-intro="seen"` on <html> before first paint,
- * and CSS hides the overlay outright — so there's no flash for returning visitors.
+ * Repeat visits never see it: an inline script right after this element (see
+ * layout.tsx) reads sessionStorage and tags the overlay with `data-seen` before
+ * first paint, and CSS hides it outright — so there's no flash for returning
+ * visitors, and no hydration mismatch.
  *
  * It's skippable by click, tap, or any keypress, and always self-dismisses.
  *
@@ -53,7 +55,14 @@ export default function IntroLoader() {
   // overlay is hidden by CSS, so locking would trap the page for no reason.
   useEffect(() => {
     if (!isMounted) return;
-    if (document.documentElement.dataset.intro === "seen") return;
+
+    let alreadySeen = false;
+    try {
+      alreadySeen = sessionStorage.getItem(INTRO_KEY) === "1";
+    } catch {
+      // Storage unavailable — treat as a first visit and lock as normal.
+    }
+    if (alreadySeen) return;
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -68,13 +77,16 @@ export default function IntroLoader() {
     <div
       onClick={dismiss}
       role="presentation"
+      // The pre-paint script in layout.tsx may add data-seen here before
+      // hydration; that difference is intentional, not a mismatch.
+      suppressHydrationWarning
       className={`intro-overlay fixed inset-0 z-[100] flex items-center justify-center bg-ink transition-opacity duration-[450ms] ease-out ${
         isDismissed ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
       <div className="intro-mark text-center">
-        <p className="font-display text-3xl tracking-[0.02em] text-text sm:text-5xl">
-          Fareedah Davis
+        <p className="font-display text-3xl lowercase tracking-[-0.015em] text-text sm:text-5xl">
+          {brand.mark}
         </p>
         <p className="mt-4 font-body text-[10px] uppercase tracking-[0.45em] text-slate-300">
           Makeup Artist

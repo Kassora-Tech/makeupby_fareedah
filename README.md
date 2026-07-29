@@ -17,6 +17,17 @@ Open [http://localhost:3000](http://localhost:3000).
 All copy, image slots, services, and credentials live in **one file**:
 [src/data/content.ts](src/data/content.ts). Edit there rather than in components.
 
+### Brand mark vs. legal name
+
+`brand` in `content.ts` holds both:
+
+- `brand.mark` (`makeupby_fareedah`) — the wordmark shown in the nav and intro card.
+- `brand.heroLines` — the same handle split across two lines for the oversized
+  hero. The break point is data, not markup, so it's easy to change.
+- `brand.legalName` (`Fareedah Davis`) — used for the footer copyright, the page
+  title/metadata, and a visually-hidden line in the hero, so the real name still
+  reaches search engines and screen readers.
+
 ## Swapping in real photography
 
 Every image is a single string in `content.ts`. To replace a placeholder:
@@ -75,9 +86,12 @@ Type: **Playfair Display** for display/headlines, **Inter** for body/UI.
   reveals via IntersectionObserver, animating `opacity`/`transform` only so work
   stays on the compositor. Observers disconnect after firing.
 - `IntroLoader` ([src/components/IntroLoader.tsx](src/components/IntroLoader.tsx)) —
-  ~1.25s studio title card on first load. Skippable by click or keypress, and an
-  inline script in `layout.tsx` stamps `data-intro="seen"` before first paint so
-  repeat visits in the same session never flash it.
+  ~1.25s studio title card on first load. Skippable by click or keypress. An
+  inline script in `layout.tsx`, placed immediately after the overlay, tags it
+  with `data-seen` before first paint so repeat visits in the same session never
+  flash it. The tag goes on the overlay (which carries `suppressHydrationWarning`)
+  rather than on `<html>` — stamping the root element trips React's hydration
+  check and `suppressHydrationWarning` doesn't cover it.
 - All motion is disabled under `prefers-reduced-motion: reduce`.
 
 **Note on `ImageSlot`:** its wrapper is always `position: relative` (required by

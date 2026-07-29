@@ -1,4 +1,4 @@
-import { hero } from "@/data/content";
+import { brand, hero } from "@/data/content";
 import ImageSlot from "./ImageSlot";
 
 export default function Hero() {
@@ -34,14 +34,29 @@ export default function Hero() {
           {hero.location}
         </p>
 
-        {/* Type as the design element: oversized, tight-tracked display serif. */}
-        <h1 className="mt-7 font-display text-[clamp(2.75rem,11vw,8.5rem)] leading-[0.92] tracking-[-0.025em] text-text">
-          Fareedah
-          <br />
-          Davis
+        {/* Type as the design element: oversized, tight-tracked display serif.
+            The handle is set as a two-line wordmark (see brand.heroLines) — at 17
+            characters it can't hold a single line at this size on mobile. */}
+        <h1 className="mt-7 font-display text-[clamp(2.5rem,10.5vw,8rem)] leading-[0.92] lowercase tracking-[-0.03em] text-text">
+          {brand.heroLines.map((line, index) => (
+            <span key={line} className="block">
+              {index === brand.heroLines.length - 1 ? (
+                <>
+                  {/* The underscore leads the second line as a deliberate mark. */}
+                  <span className="text-accent">{line.slice(0, 1)}</span>
+                  {line.slice(1)}
+                </>
+              ) : (
+                line
+              )}
+            </span>
+          ))}
         </h1>
+        {/* The real name still reaches search engines and screen readers. */}
+        <span className="sr-only">{brand.legalName}</span>
 
-        <div className="mt-10 h-px w-24 bg-slate-700" />
+        {/* Extra breathing room so this rule doesn't crowd the wordmark's underscore. */}
+        <div className="mt-14 h-px w-24 bg-slate-700" />
 
         <p className="mt-8 max-w-lg font-body text-[11px] uppercase leading-relaxed tracking-[0.24em] text-text-muted sm:text-xs">
           {beforeAccent}

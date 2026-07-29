@@ -48,8 +48,23 @@ export const navLinks: NavLink[] = [
   { label: "Contact", href: "#contact" },
 ];
 
+/**
+ * The brand mark, used for the nav logotype, the intro card, and the hero.
+ *
+ * `mark` is the handle set as a wordmark. `heroLines` splits it across two lines
+ * for the oversized hero treatment — kept as data so the break point is a content
+ * decision, not something buried in the component.
+ *
+ * `legalName` stays the real name: it's what the copyright line and page metadata
+ * should say, and it's what people search for.
+ */
+export const brand = {
+  mark: "makeupby_fareedah",
+  heroLines: ["makeupby", "_fareedah"],
+  legalName: "Fareedah Davis",
+};
+
 export const hero = {
-  name: "Fareedah Davis",
   accentWord: "Editorial", // the one word that gets the glitch treatment
   roleLine: "Senior Makeup Artist — Editorial · TV & Film · SFX",
   location: "Cape Town, South Africa",
@@ -177,7 +192,7 @@ export const contact = {
 };
 
 export const footer = {
-  copyright: `© ${new Date().getFullYear()} Fareedah Davis. All rights reserved.`,
+  copyright: `© ${new Date().getFullYear()} ${brand.legalName}. All rights reserved.`,
   credit: "Site by Kassora Tech",
   stockCredit: "Photos via Unsplash",
 };
