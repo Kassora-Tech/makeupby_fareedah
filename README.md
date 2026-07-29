@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fareedah Davis — Portfolio Site
 
-## Getting Started
+Single-page portfolio for Fareedah Davis, Senior Makeup Artist (Cape Town).
+Next.js (App Router) + TypeScript + Tailwind CSS v4.
 
-First, run the development server:
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Editing content
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+All copy, image slots, services, and credentials live in **one file**:
+[src/data/content.ts](src/data/content.ts). Edit there rather than in components.
 
-## Learn More
+## Swapping in real photography
 
-To learn more about Next.js, take a look at the following resources:
+Every image is a single string in `content.ts`. To replace a placeholder:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Drop the photo into `/public` (e.g. `public/glam-01.jpg`).
+2. Change that one line: `src: U("1502823403499-...")` → `src: "/glam-01.jpg"`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+`ImageSlot` renders through `next/image` and falls back to a styled block if a
+file is missing, so nothing breaks mid-swap. When all real photos are in, set
+`showsStockCredit = false` in `content.ts` to drop the footer credit line.
 
-## Deploy on Vercel
+### About the current placeholders
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+They are hand-picked Unsplash photos (free license, commercial use permitted),
+chosen for cool-toned editorial mood. **They are placeholders, not a curated
+set** — Unsplash and Pexels both require an API key for search and block
+unauthenticated requests, so these were selected by hand from verified URLs.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+With a free key from [unsplash.com/developers](https://unsplash.com/developers)
+you can pull a wider, better-matched set per category:
+
+```bash
+UNSPLASH_ACCESS_KEY=your_key node scripts/fetch-unsplash.mjs
+```
+
+It prints ready-to-paste URLs grouped by gallery category. Review the results
+before pasting — search relevance varies.
+
+## Before launch
+
+- **Contact form endpoint** — [src/app/api/contact/route.ts](src/app/api/contact/route.ts)
+  is a placeholder that logs to the server console and returns success. Swap it
+  for a real email service (Resend, Formspree, SendGrid) so inquiries actually
+  arrive.
+- **Real photography** — replace the Unsplash placeholders as above.
+
+## Design system
+
+Palette follows a 60/30/10 ratio, defined as CSS variables in
+[src/app/globals.css](src/app/globals.css):
+
+| Role | Token | Value |
+| --- | --- | --- |
+| Dominant base | `--ink` / `--surface` | `#0A0B0F` / `#15161C` |
+| Secondary (structure, muted text, grain tint) | `--slate-700` / `--slate-500` / `--slate-300` | `#3A3F52` / `#5C6178` / `#9A9CAA` |
+| Signature accent | `--accent` | `#3D6BFF` |
+| Rare spark (used twice site-wide) | `--spark` | `#E0217D` |
+| Optional cool pop | `--icy` | `#5FE3E0` |
+| Text | `--text` / `--text-muted` | `#F1F0EC` / `#9A9CAA` |
+
+Type: **Playfair Display** for display/headlines, **Inter** for body/UI.
+
+### Motion
+
+- `Reveal` ([src/components/Reveal.tsx](src/components/Reveal.tsx)) — scroll-in
+  reveals via IntersectionObserver, animating `opacity`/`transform` only so work
+  stays on the compositor. Observers disconnect after firing.
+- `IntroLoader` ([src/components/IntroLoader.tsx](src/components/IntroLoader.tsx)) —
+  ~1.25s studio title card on first load. Skippable by click or keypress, and an
+  inline script in `layout.tsx` stamps `data-intro="seen"` before first paint so
+  repeat visits in the same session never flash it.
+- All motion is disabled under `prefers-reduced-motion: reduce`.
+
+**Note on `ImageSlot`:** its wrapper is always `position: relative` (required by
+`next/image` `fill`). To position one absolutely, wrap it in a positioned parent
+rather than passing `absolute` in `className` — the utility won't reliably win
+the cascade.
+
+## Deploying
+
+Push to a Git repo and import it in Vercel. No extra configuration needed —
+`next.config.ts` already allowlists the Unsplash image host.

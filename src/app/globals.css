@@ -1,26 +1,197 @@
 @import "tailwindcss";
 
+/*
+  Palette follows a 60/30/10 ratio so the site reads cohesive rather than as
+  competing neons:
+    ~60% ink/surface   — cool blue-black base, carries the "deep grunge" weight
+    ~30% slate family  — borders, muted text, grain tint; keeps grunge COOL not warm
+    ~10% accent        — cobalt is the single signature hue; magenta is a rare spark
+*/
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Dominant — cool near-black (blue-black, never warm) */
+  --ink: #0a0b0f;
+  --surface: #15161c;
+
+  /* Secondary — desaturated steel/slate blue-violet */
+  --slate-900: #23252f;
+  --slate-700: #3a3f52;
+  --slate-500: #5c6178;
+  --slate-300: #9a9caa;
+
+  /* Accent — signature electric cobalt (~10% usage) */
+  --accent: #3d6bff;
+  /* Rare spark — reserved for one or two eccentric moments only */
+  --spark: #e0217d;
+  /* Optional third pop, same cool family (icy cyan) */
+  --icy: #5fe3e0;
+
+  /* Text */
+  --text: #f1f0ec;
+  --text-muted: #9a9caa;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-slate-900: var(--slate-900);
+  --color-slate-700: var(--slate-700);
+  --color-slate-500: var(--slate-500);
+  --color-slate-300: var(--slate-300);
+  --color-accent: var(--accent);
+  --color-spark: var(--spark);
+  --color-icy: var(--icy);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+
+  --font-display: var(--font-playfair);
+  --font-body: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--ink);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ink);
+  color: var(--text);
+}
+
+/* Offset anchor targets so the sticky nav doesn't cover section headings */
+section[id] {
+  scroll-margin-top: 5rem;
+}
+
+/*
+  Grain is tinted with the slate secondary rather than pure black/white noise,
+  so the texture reads as part of the palette instead of sitting on top of it.
+*/
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0.055;
+  mix-blend-mode: soft-light;
+  background-color: var(--slate-500);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-blend-mode: multiply;
+}
+
+/* Thin hairline divider in a muted accent tone — used between sections
+   instead of hard color blocks, for a refined gallery-wall feel. */
+.hairline {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--slate-700) 15%,
+    var(--slate-700) 85%,
+    transparent
+  );
+}
+
+/*
+  Intro card. The inline script in layout.tsx sets data-intro="seen" before first
+  paint on repeat visits, so the overlay is gone from the very first frame.
+*/
+html[data-intro="seen"] .intro-overlay {
+  display: none;
+}
+
+.intro-mark {
+  animation: intro-in 900ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes intro-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-mark {
+    animation: none;
+  }
+}
+
+/* Distressed/glitch treatment — hero accent word and logotype only, never body text. */
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  background: inherit;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .glitch::before {
+    color: var(--icy);
+    clip-path: inset(0 0 60% 0);
+    animation: glitch-shift 3.4s infinite linear alternate-reverse;
+  }
+
+  .glitch::after {
+    color: var(--accent);
+    clip-path: inset(45% 0 0 0);
+    animation: glitch-shift 2.6s infinite linear alternate-reverse;
+  }
+}
+
+@keyframes glitch-shift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  20% {
+    transform: translate3d(-2px, 1px, 0);
+  }
+  40% {
+    transform: translate3d(2px, -1px, 0);
+  }
+  60% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  80% {
+    transform: translate3d(1px, 1px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/*
+  Scroll reveal. Animates transform/opacity only (GPU-friendly, no layout work).
+  Elements start hidden and are revealed by IntersectionObserver adding .is-visible.
+*/
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition:
+    opacity 450ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 450ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Reduced-motion and no-JS users get the content immediately, never hidden. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
