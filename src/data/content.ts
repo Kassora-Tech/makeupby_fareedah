@@ -69,8 +69,10 @@ export const hero = {
   roleLine: "Senior Makeup Artist — Editorial · TV & Film · SFX",
   location: "Cape Town, South Africa",
   scrollCue: "Scroll",
-  image: STOCK.gelLight,
-  imageAlt: "Editorial makeup portrait lit with coloured gels",
+  // Real client photography (not a stock placeholder).
+  image: "/images/hero.jpg",
+  imageAlt:
+    "Close-up editorial makeup: graphic orange and green eye work in hard directional light",
 };
 
 export type GalleryCategory =

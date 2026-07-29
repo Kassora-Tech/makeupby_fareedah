@@ -27,6 +27,11 @@
 # third-party moodboard references — inspiration only, not licensed for use or redistribution
 /Design Inspo/
 
+# original hero master (2.2 MB PNG). The shipped asset is the optimised
+# public/images/hero.jpg; this stays local so the master isn't lost. Safe to
+# delete once it's backed up elsewhere.
+/public/images/hero.png
+
 # debug
 npm-debug.log*
 yarn-debug.log*

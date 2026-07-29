@@ -92,10 +92,10 @@ section[id] {
 }
 
 /*
-  Intro card. The inline script in layout.tsx tags the overlay with data-seen
+  Intro card. The inline script in layout.tsx sets data-intro="seen" on <html>
   before first paint on repeat visits, so it's gone from the very first frame.
 */
-.intro-overlay[data-seen] {
+html[data-intro="seen"] .intro-overlay {
   display: none;
 }
 

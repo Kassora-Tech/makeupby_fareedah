@@ -11,7 +11,9 @@ export default function About() {
           <CurvedText
             id="about-curve"
             text={about.curvedTag}
-            className="pointer-events-none absolute -top-14 left-1/2 h-48 w-48 -translate-x-1/2 text-slate-500"
+            // Sits high enough that the arc's descending ends clear the photo's
+            // top edge — the image paints over anything that dips below it.
+            className="pointer-events-none absolute -top-24 left-1/2 h-48 w-48 -translate-x-1/2 text-slate-500"
           />
           <ImageSlot
             src={about.image}

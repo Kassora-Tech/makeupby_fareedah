@@ -23,7 +23,10 @@ export default function Hero() {
           priority
           sizes="100vw"
           className="h-full w-full"
-          imageClassName="object-center saturate-[0.75] brightness-[0.95]"
+          // The warm orange is intentional contrast against the cool palette, so
+          // this keeps full saturation rather than muting it into mud. Focal point
+          // is biased right so the eye survives the crop on narrow viewports.
+          imageClassName="object-[82%_30%] brightness-[0.92]"
         />
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-ink/15" />

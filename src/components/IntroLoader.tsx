@@ -10,10 +10,9 @@ const FADE_MS = 450; // overlay fade-out
 /**
  * Brief studio-opening title card on first load.
  *
- * Repeat visits never see it: an inline script right after this element (see
- * layout.tsx) reads sessionStorage and tags the overlay with `data-seen` before
- * first paint, and CSS hides it outright — so there's no flash for returning
- * visitors, and no hydration mismatch.
+ * Repeat visits never see it: an inline script in <head> (see layout.tsx) reads
+ * sessionStorage and stamps `data-intro="seen"` on <html> before first paint, and
+ * CSS hides the overlay outright — so there's no flash for returning visitors.
  *
  * It's skippable by click, tap, or any keypress, and always self-dismisses.
  *
@@ -77,9 +76,6 @@ export default function IntroLoader() {
     <div
       onClick={dismiss}
       role="presentation"
-      // The pre-paint script in layout.tsx may add data-seen here before
-      // hydration; that difference is intentional, not a mismatch.
-      suppressHydrationWarning
       className={`intro-overlay fixed inset-0 z-[100] flex items-center justify-center bg-ink transition-opacity duration-[450ms] ease-out ${
         isDismissed ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
