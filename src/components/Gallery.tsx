@@ -16,10 +16,10 @@ const aspectClass: Record<string, string> = {
 };
 
 /**
- * Avant-Garde is the one category that gets the magenta spark — every other tab
+ * Creative & SFX is the one category that gets the magenta spark — every other tab
  * uses the signature cobalt, keeping magenta an accent rather than a second theme.
  */
-const isSparkCategory = (value: FilterValue) => value === "Avant-Garde / Color";
+const isSparkCategory = (value: FilterValue) => value === "Creative & SFX";
 
 export default function Gallery() {
   const [filter, setFilter] = useState<FilterValue>("All");

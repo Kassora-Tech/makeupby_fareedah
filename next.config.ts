@@ -10,22 +10,13 @@ const nextConfig: NextConfig = {
       Serving images as-is sidesteps the optimizer entirely and costs nothing.
       next/image still handles layout (fill + aspect-ratio wrappers), so there's
       no layout shift — we just lose automatic resizing and WebP/AVIF conversion,
-      which we compensate for by shipping right-sized, pre-compressed files.
+      which we compensate for by committing right-sized, pre-compressed files.
+      See the Photography section of the README before adding new images.
 
       To re-enable optimization later (after enabling it on the Vercel plan),
-      delete this single line. remotePatterns below is kept for that case.
+      delete this single line.
     */
     unoptimized: true,
-
-    // Placeholder photography is served from the Unsplash CDN while the client's
-    // own images are pending. Once real photos live in /public, this entry can go.
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-        pathname: "/**",
-      },
-    ],
   },
 };
 

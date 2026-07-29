@@ -28,41 +28,43 @@ All copy, image slots, services, and credentials live in **one file**:
   title/metadata, and a visually-hidden line in the hero, so the real name still
   reaches search engines and screen readers.
 
-## Swapping in real photography
+## Photography
 
-Every image is a single string in `content.ts`. To replace a placeholder:
+Every photo on the site is Fareedah's own work, in `public/images`. There is no
+stock imagery left. Each image is a single string in `content.ts`, so swapping a
+shot is a one-line change.
 
-1. Drop the photo into `/public` (e.g. `public/glam-01.jpg`).
-2. Change that one line: `src: U("1502823403499-...")` → `src: "/glam-01.jpg"`.
+### Adding new work
 
-`ImageSlot` renders through `next/image` and falls back to a styled block if a
-file is missing, so nothing breaks mid-swap. When all real photos are in, set
-`showsStockCredit = false` in `content.ts` to drop the footer credit line.
-
-### About the current placeholders
-
-They are hand-picked Unsplash photos (free license, commercial use permitted),
-chosen for cool-toned editorial mood. **They are placeholders, not a curated
-set** — Unsplash and Pexels both require an API key for search and block
-unauthenticated requests, so these were selected by hand from verified URLs.
-
-With a free key from [unsplash.com/developers](https://unsplash.com/developers)
-you can pull a wider, better-matched set per category:
+Because Vercel's Image Optimization is disabled (see below), **the committed file
+is exactly what browsers download.** Don't commit multi-megabyte PNGs straight off
+a phone or camera — convert them first:
 
 ```bash
-UNSPLASH_ACCESS_KEY=your_key node scripts/fetch-unsplash.mjs
+node -e "const s=require('sharp');s('public/images/NEW.png').resize({width:1200,withoutEnlargement:true}).jpeg({quality:82,mozjpeg:true}).toFile('public/images/NEW.jpg')"
 ```
 
-It prints ready-to-paste URLs grouped by gallery category. Review the results
-before pasting — search relevance varies.
+That pipeline took the current set from 21.3 MB of PNG to 1.4 MB of JPEG with no
+visible quality loss. `public/images/*.png` is gitignored, so masters can sit
+beside the shipped `.jpg` without bloating the repo.
+
+Then add an entry to `galleryImages` in `content.ts`:
+
+```ts
+{ id: "unique-id", category: "Editorial", src: "/images/NEW.jpg", alt: "…", aspect: "portrait" }
+```
+
+Filter tabs are **derived from the images present**, so a new category creates its
+own tab automatically and no tab can appear with nothing behind it. `aspect`
+(`portrait` / `square` / `tall` / `wide`) only crops the tile — it never distorts
+the photo.
 
 ## Before launch
 
 - **Contact form endpoint** — [src/app/api/contact/route.ts](src/app/api/contact/route.ts)
   is a placeholder that logs to the server console and returns success. Swap it
   for a real email service (Resend, Formspree, SendGrid) so inquiries actually
-  arrive.
-- **Real photography** — replace the Unsplash placeholders as above.
+  arrive. This is the one genuine gap: right now a booking enquiry goes nowhere.
 
 ## Design system
 
@@ -87,11 +89,11 @@ Type: **Playfair Display** for display/headlines, **Inter** for body/UI.
   stays on the compositor. Observers disconnect after firing.
 - `IntroLoader` ([src/components/IntroLoader.tsx](src/components/IntroLoader.tsx)) —
   ~1.25s studio title card on first load. Skippable by click or keypress. An
-  inline script in `layout.tsx`, placed immediately after the overlay, tags it
-  with `data-seen` before first paint so repeat visits in the same session never
-  flash it. The tag goes on the overlay (which carries `suppressHydrationWarning`)
-  rather than on `<html>` — stamping the root element trips React's hydration
-  check and `suppressHydrationWarning` doesn't cover it.
+  inline script in the `<head>` of `layout.tsx` stamps `data-intro="seen"` on
+  `<html>` before first paint, and CSS hides the overlay, so repeat visits in the
+  same session never flash it. `<html>` carries `suppressHydrationWarning` because
+  that attribute is added pre-hydration by design. Keep the script in `<head>`:
+  React never executes script tags rendered as children inside components.
 - All motion is disabled under `prefers-reduced-motion: reduce`.
 
 **Note on `ImageSlot`:** its wrapper is always `position: relative` (required by
@@ -101,5 +103,21 @@ the cascade.
 
 ## Deploying
 
-Push to a Git repo and import it in Vercel. No extra configuration needed —
-`next.config.ts` already allowlists the Unsplash image host.
+Push to a Git repo and import it in Vercel. **No environment variables are
+required** — nothing in the app reads `process.env`.
+
+### Image Optimization is off — on purpose
+
+`next.config.ts` sets `images.unoptimized`. Vercel's Image Optimization is a
+metered feature that isn't enabled on this account, and with it on every
+`/_next/image` request returned `HTTP 402`
+(`OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED`) — meaning **no image on the site
+rendered at all**, even though the underlying files served fine.
+
+Bypassing the optimizer costs nothing. `next/image` still drives layout via `fill`
+and the aspect-ratio wrappers, so there's no layout shift; we lose automatic
+resizing and WebP/AVIF, and compensate by pre-compressing files (see
+[Photography](#photography)).
+
+If Image Optimization is enabled on the plan later, delete the `unoptimized` line
+to turn it back on.

@@ -27,10 +27,12 @@
 # third-party moodboard references — inspiration only, not licensed for use or redistribution
 /Design Inspo/
 
-# original hero master (2.2 MB PNG). The shipped asset is the optimised
-# public/images/hero.jpg; this stays local so the master isn't lost. Safe to
-# delete once it's backed up elsewhere.
-/public/images/hero.png
+# PNG masters for the photography. The site ships the optimised .jpg beside each
+# one (21 MB of PNG -> 1.4 MB of JPEG). Masters stay local so they aren't lost;
+# safe to delete once backed up elsewhere. Re-run the sharp conversion if you add
+# a new master. Image Optimization is off (see next.config.ts), so the committed
+# files are what browsers actually download — keep shipping .jpg, not .png.
+/public/images/*.png
 
 # debug
 npm-debug.log*

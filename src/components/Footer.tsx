@@ -1,4 +1,4 @@
-import { contact, footer, showsStockCredit } from "@/data/content";
+import { contact, footer } from "@/data/content";
 
 export default function Footer() {
   return (
@@ -27,11 +27,7 @@ export default function Footer() {
           </svg>
         </a>
 
-        <div className="font-body text-[11px] tracking-[0.06em] text-slate-500">
-          <p>{footer.credit}</p>
-          {/* Remove by setting showsStockCredit to false once real photography is in. */}
-          {showsStockCredit && <p className="mt-1 text-slate-500/70">{footer.stockCredit}</p>}
-        </div>
+        <p className="font-body text-[11px] tracking-[0.06em] text-slate-500">{footer.credit}</p>
       </div>
     </footer>
   );
