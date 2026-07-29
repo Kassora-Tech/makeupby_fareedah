@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { brand, navLinks } from "@/data/content";
 
@@ -27,9 +28,17 @@ export default function Nav() {
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <a
           href="#hero"
-          className="font-display text-base lowercase tracking-[-0.01em] text-text transition-colors duration-300 hover:text-accent"
+          aria-label={`${brand.mark} — back to top`}
+          className="group relative block h-[22px] w-[180px] transition-opacity duration-300 hover:opacity-80 sm:h-[26px] sm:w-[210px]"
         >
-          {brand.mark}
+          <Image
+            src={brand.logoWordmark}
+            alt={brand.mark}
+            fill
+            sizes="210px"
+            priority
+            className="object-contain object-left"
+          />
         </a>
 
         <ul className="hidden items-center gap-10 font-body text-[10px] uppercase tracking-[0.28em] md:flex">

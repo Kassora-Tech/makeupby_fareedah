@@ -27,12 +27,16 @@
 # third-party moodboard references — inspiration only, not licensed for use or redistribution
 /Design Inspo/
 
-# PNG masters for the photography. The site ships the optimised .jpg beside each
-# one (21 MB of PNG -> 1.4 MB of JPEG). Masters stay local so they aren't lost;
-# safe to delete once backed up elsewhere. Re-run the sharp conversion if you add
-# a new master. Image Optimization is off (see next.config.ts), so the committed
-# files are what browsers actually download — keep shipping .jpg, not .png.
+# PNG masters for the photography, plus the full-size logo master. The site ships
+# the optimised .jpg beside each photo (21 MB of PNG -> 1.4 MB of JPEG). Masters
+# stay local so they aren't lost; safe to delete once backed up elsewhere. Image
+# Optimization is off (see next.config.ts), so the committed files are what
+# browsers actually download — keep shipping .jpg for photography, not .png.
 /public/images/*.png
+
+# ...except the derived logo assets, which must ship. They stay PNG because they're
+# flat graphics with hard edges, where JPEG would ring around the gold lettering.
+!/public/images/logo-*.png
 
 # debug
 npm-debug.log*

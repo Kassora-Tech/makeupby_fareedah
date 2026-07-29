@@ -43,6 +43,19 @@ export const brand = {
   mark: "makeupby_fareedah",
   heroLines: ["makeupby", "_fareedah"],
   legalName: "Fareedah Davis",
+
+  /*
+    Derived from public/images/logo.png (the square master, gold on solid black).
+    The master's black background is converted to a real alpha channel rather than
+    hidden with a blend mode — a fixed, z-indexed header creates its own stacking
+    context, so mix-blend-mode had nothing to blend against and the logo rendered
+    as a black box over the hero. Real transparency composites correctly anywhere.
+
+    The nav gets the wordmark strip rather than the full lockup: at ~22px tall the
+    monogram and "ENHANCE. EXPRESS. EMPOWER." tagline would be unreadable mush.
+  */
+  logoWordmark: "/images/logo-wordmark.png",
+  logoFull: "/images/logo-full.png",
 };
 
 export const hero = {

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { brand } from "@/data/content";
 
@@ -80,13 +81,17 @@ export default function IntroLoader() {
         isDismissed ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
-      <div className="intro-mark text-center">
-        <p className="font-display text-3xl lowercase tracking-[-0.015em] text-text sm:text-5xl">
-          {brand.mark}
-        </p>
-        <p className="mt-4 font-body text-[10px] uppercase tracking-[0.45em] text-slate-300">
-          Makeup Artist
-        </p>
+{/* The full lockup — monogram, wordmark and tagline — at the one size it can
+          all be read. */}
+      <div className="intro-mark relative h-[260px] w-[260px] sm:h-[380px] sm:w-[380px]">
+        <Image
+          src={brand.logoFull}
+          alt={`${brand.mark} — ${brand.legalName}, makeup artist`}
+          fill
+          sizes="(max-width: 640px) 260px, 380px"
+          priority
+          className="object-contain"
+        />
       </div>
 
       <span className="absolute bottom-10 font-body text-[10px] uppercase tracking-[0.3em] text-slate-500">
